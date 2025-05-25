@@ -1,10 +1,17 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+
+// عرض ملف index.html عند الدخول إلى الصفحة
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 let players = {};
 let gameState = {
@@ -31,10 +38,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('move', (data) => {
-    socket.broadcast.emit('opponentMove', data);
-  });
-
   socket.on('rollDice', () => {
     const d1 = Math.floor(Math.random() * 6) + 1;
     const d2 = Math.floor(Math.random() * 6) + 1;
@@ -49,7 +52,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('لاعب قطع الاتصال:', socket.id);
+    console.log('لاعب غادر:', socket.id);
     delete players[socket.id];
     io.emit('playersUpdate', players);
     io.emit('playerLeft');
@@ -58,5 +61,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`خادم اللعبة يعمل على المنفذ ${PORT}`);
+  console.log(`الخادم يعمل على المنفذ ${PORT}`);
 });
