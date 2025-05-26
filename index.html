@@ -1,102 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>لعبة الطاولة أونلاين</title>
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  <style>
-    body { font-family: Arial; text-align: center; direction: rtl; background: #f9f6f0; }
-    .hidden { display: none; }
-    .player-info { font-weight: bold; margin: 10px; }
-    .dice { font-size: 22px; margin: 15px; }
-    .move-log { background: #eee; padding: 10px; margin: 10px; height: 120px; overflow-y: auto; text-align: left; }
-  </style>
+    <meta charset="UTF-8">
+    <title>لعبة الطاولة - المحبوسة</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="board">
+        <!-- الأحجار السوداء -->
+        <div class="stack black" style="top: 35px; right: 20px;"></div>
 
-<h2>لعبة الطاولة أونلاين</h2>
-
-<div id="login">
-  <label>اسم اللاعب:</label>
-  <input type="text" id="username">
-  <button onclick="joinGame()">انضمام</button>
-</div>
-
-<div id="game" class="hidden">
-  <div class="player-info" id="playerStatus"></div>
-  <div class="dice" id="diceDisplay">رمي النرد: -</div>
-  <button onclick="rollDice()">رمي النرد</button>
-  <button onclick="endTurn()">إنهاء الدور</button>
-
-  <div class="move-log" id="log"></div>
-</div>
-
-<script>
-  const socket = io();
-  let myId = '';
-  let myName = '';
-  let currentTurn = '';
-
-  function log(message) {
-    const logEl = document.getElementById("log");
-    logEl.innerHTML += `<div>${message}</div>`;
-    logEl.scrollTop = logEl.scrollHeight;
-  }
-
-  function joinGame() {
-    myName = document.getElementById("username").value.trim();
-    if (!myName) return alert("الرجاء إدخال الاسم");
-    socket.emit('joinGame', myName);
-  }
-
-  socket.on('joined', data => {
-    myId = data.id;
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("game").classList.remove("hidden");
-    log(`تم الانضمام كلقب: ${data.username}`);
-  });
-
-  socket.on('roomFull', () => {
-    alert("الغرفة ممتلئة. الرجاء المحاولة لاحقاً.");
-  });
-
-  socket.on('playersUpdate', players => {
-    document.getElementById("playerStatus").innerText = "اللاعبون: " + Object.values(players).join(" و ");
-  });
-
-  socket.on('startGame', data => {
-    currentTurn = data.turn;
-    log("بدأت اللعبة!");
-    log("الدور الحالي: " + (currentTurn === myId ? "دورك" : "انتظار الخصم"));
-  });
-
-  function rollDice() {
-    if (currentTurn !== myId) return alert("ليس دورك!");
-    socket.emit("rollDice");
-  }
-
-  socket.on("diceRolled", data => {
-    currentTurn = data.turn;
-    document.getElementById("diceDisplay").innerText = "رمي النرد: " + data.dice.join(" - ");
-    log("رمي النرد: " + data.dice.join(" - "));
-  });
-
-  function endTurn() {
-    if (currentTurn !== myId) return alert("ليس دورك!");
-    socket.emit("endTurn");
-  }
-
-  socket.on("turnChanged", turnId => {
-    currentTurn = turnId;
-    log("الدور انتقل إلى " + (turnId === myId ? "أنت" : "الخصم"));
-  });
-
-  socket.on("playerLeft", () => {
-    log("الخصم غادر اللعبة.");
-    alert("الخصم غادر. يرجى إعادة الدخول.");
-    location.reload();
-  });
-</script>
-
+        <!-- الأحجار البيضاء -->
+        <div class="stack white" style="bottom: 35px; right: 20px;"></div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

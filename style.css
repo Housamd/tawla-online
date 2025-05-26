@@ -1,0 +1,33 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+}
+#board {
+    position: relative;
+    width: 800px;
+    height: 800px;
+    margin: 20px auto;
+    background-image: url('board.png');
+    background-size: cover;
+    background-position: center;
+}
+.stack {
+    position: absolute;
+    width: 60px;
+}
+.stack.white div,
+.stack.black div {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 2px auto;
+    cursor: pointer;
+}
+.stack.white div {
+    background-color: #f5e7b2;
+}
+.stack.black div {
+    background-color: #111;
+}
